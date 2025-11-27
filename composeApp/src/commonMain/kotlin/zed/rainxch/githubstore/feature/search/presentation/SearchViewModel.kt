@@ -18,7 +18,6 @@ class SearchViewModel(
     private val searchRepository: SearchRepository
 ) : ViewModel() {
 
-    private var hasLoadedInitialData = false
     private var currentSearchJob: Job? = null
     private var currentPage = 1
     private var searchDebounceJob: Job? = null
@@ -27,6 +26,18 @@ class SearchViewModel(
     val state = _state.asStateFlow()
 
     private fun performSearch(isInitial: Boolean = false) {
+        if (_state.value.search.isBlank()) {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isLoadingMore = false,
+                    repositories = emptyList(),
+                    errorMessage = null
+                )
+            }
+            return
+        }
+
         currentSearchJob?.cancel()
 
         if (isInitial) {
@@ -46,7 +57,6 @@ class SearchViewModel(
             try {
                 searchRepository.searchRepositories(
                     query = _state.value.search,
-                    sortBy = _state.value.selectedSortBy,
                     searchPlatformType = _state.value.selectedSearchPlatformType,
                     page = currentPage
                 ).catch { e ->
@@ -56,7 +66,6 @@ class SearchViewModel(
                 }.collect { paginatedRepos ->
                     if (isActive) {
                         _state.update { currentState ->
-                            // Merge results in an idempotent way to avoid duplicates
                             val merged = if (isInitial) {
                                 paginatedRepos.repos
                             } else {
@@ -114,10 +123,13 @@ class SearchViewModel(
                 searchDebounceJob?.cancel()
 
                 if (action.query.isBlank()) {
-                    searchDebounceJob = viewModelScope.launch {
-                        delay(300)
-                        currentPage = 1
-                        performSearch(isInitial = true)
+                    _state.update {
+                        it.copy(
+                            repositories = emptyList(),
+                            isLoading = false,
+                            isLoadingMore = false,
+                            errorMessage = null
+                        )
                     }
                 } else {
                     searchDebounceJob = viewModelScope.launch {

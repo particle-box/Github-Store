@@ -1,6 +1,5 @@
 package zed.rainxch.githubstore.feature.search.data.repository
 
-import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -11,16 +10,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import zed.rainxch.githubstore.core.domain.model.GithubRepoSummary
@@ -29,7 +28,6 @@ import zed.rainxch.githubstore.feature.home.data.model.GithubRepoSearchResponse
 import zed.rainxch.githubstore.feature.home.data.model.toSummary
 import zed.rainxch.githubstore.feature.home.domain.repository.PaginatedRepos
 import zed.rainxch.githubstore.feature.search.domain.model.SearchPlatformType
-import zed.rainxch.githubstore.feature.search.domain.model.SortBy
 import zed.rainxch.githubstore.feature.search.domain.repository.SearchRepository
 
 class SearchRepositoryImpl(
@@ -63,22 +61,16 @@ class SearchRepositoryImpl(
 
     override fun searchRepositories(
         query: String,
-        sortBy: SortBy,
         searchPlatformType: SearchPlatformType,
         page: Int
     ): Flow<PaginatedRepos> = channelFlow {
         val perPage = 30
-        val searchQuery = buildSearchQuery(query, sortBy, searchPlatformType)
-        val (sort, order) = sortBy.toGithubParams()
-
-        Logger.d { "Fast search query: $searchQuery | sort=$sort | page=$page" }
+        val searchQuery = buildSearchQuery(query, searchPlatformType)
 
         try {
             val response: GithubRepoSearchResponse =
                 githubNetworkClient.get("/search/repositories") {
                     parameter("q", searchQuery)
-                    if (sort != null) parameter("sort", sort)
-                    if (sort != null) parameter("order", order)
                     parameter("per_page", perPage)
                     parameter("page", page)
                 }.body()
@@ -87,21 +79,18 @@ class SearchRepositoryImpl(
             val baseHasMore = (page * perPage) < total && response.items.isNotEmpty()
 
             if (page == 1) {
-                // Fixed strict-first-render parameters (RecentlyUpdated sort removed)
                 val tunedTargetCount = 24
                 val tunedMinFirstEmit = 4
                 val tunedVerifyConcurrency = 12
                 val tunedPerCheckTimeoutMs = 1400L
                 val tunedMaxBackfillPages = 3
-                val tunedEarlyFallbackTimeoutMs = 0L // Raw fallback disabled by business rules
+                val tunedEarlyFallbackTimeoutMs = 0L
                 val tunedCandidatesPerPage = 50
                 val rawFallbackFirstItems = emptyList<GithubRepoSummary>()
 
                 val strict = runStrictFirstRender(
                     firstPageItems = response.items,
                     searchQuery = searchQuery,
-                    sort = sort,
-                    order = order,
                     perPage = perPage,
                     startPage = page,
                     searchPlatformType = searchPlatformType,
@@ -114,7 +103,6 @@ class SearchRepositoryImpl(
                     rawFallbackItems = rawFallbackFirstItems,
                     candidatesPerPage = tunedCandidatesPerPage
                 ) { growingVerified ->
-                    // Never emit an empty list as an early update
                     if (growingVerified.isNotEmpty()) {
                         send(
                             PaginatedRepos(
@@ -127,7 +115,6 @@ class SearchRepositoryImpl(
                     }
                 }
 
-                // Final emit after strict verification/backfill (may still be empty if truly no matches)
                 send(
                     PaginatedRepos(
                         repos = strict.verified,
@@ -147,7 +134,6 @@ class SearchRepositoryImpl(
                                 try {
                                     semaphore.withPermit {
                                         withTimeoutOrNull(timeoutMs) {
-                                            // Platform-specific latest release requirement
                                             checkRepoHasInstallersCached(repo, searchPlatformType)
                                         }
                                     }
@@ -172,7 +158,6 @@ class SearchRepositoryImpl(
                         }
                     }
 
-                    // For updated sort, avoid emitting completely empty filtered lists if the API suggests more pages
                     if (filtered.isNotEmpty() || !baseHasMore) {
                         send(
                             PaginatedRepos(
@@ -183,7 +168,6 @@ class SearchRepositoryImpl(
                             )
                         )
                     } else {
-                        // Emit an empty page marker with hasMore=true only if needed to allow the UI to request next pages
                         send(
                             PaginatedRepos(
                                 repos = emptyList(),
@@ -211,7 +195,6 @@ class SearchRepositoryImpl(
 
     private fun buildSearchQuery(
         userQuery: String,
-        sortBy: SortBy,
         searchPlatformType: SearchPlatformType
     ): String {
         val clean = userQuery.trim()
@@ -243,8 +226,6 @@ class SearchRepositoryImpl(
     private suspend fun runStrictFirstRender(
         firstPageItems: List<GithubRepoNetworkModel>,
         searchQuery: String,
-        sort: String?,
-        order: String,
         perPage: Int,
         startPage: Int,
         searchPlatformType: SearchPlatformType,
@@ -282,7 +263,6 @@ class SearchRepositoryImpl(
                             try {
                                 semaphore.withPermit {
                                     withTimeoutOrNull(perCheckTimeoutMs) {
-                                        // Use the selected platform for strict-first verification on page 1
                                         checkRepoHasInstallersCached(repo, searchPlatformType)
                                     }
                                 }
@@ -322,8 +302,6 @@ class SearchRepositoryImpl(
                 val resp: GithubRepoSearchResponse =
                     githubNetworkClient.get("/search/repositories") {
                         parameter("q", searchQuery)
-                        if (sort != null) parameter("sort", sort)
-                        if (sort != null) parameter("order", order)
                         parameter("per_page", perPage)
                         parameter("page", nextPage)
                     }.body()
@@ -433,7 +411,6 @@ class SearchRepositoryImpl(
         repo: GithubRepoNetworkModel,
         targetPlatform: SearchPlatformType
     ): GithubRepoSummary? {
-        // Cache per repo per platform to avoid cross-platform contamination
         val key = "${repo.owner.login}/${repo.name}:LATEST_PLATFORM_${targetPlatform.name}"
         val cached = cacheMutex.withLock {
             if (releaseCheckCache.contains(key)) releaseCheckCache.get(key) else null

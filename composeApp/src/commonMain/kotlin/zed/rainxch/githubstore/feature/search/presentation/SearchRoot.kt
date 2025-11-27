@@ -56,7 +56,7 @@ import zed.rainxch.githubstore.feature.search.presentation.components.SortByBott
 
 @Composable
 fun SearchRoot(
-    onNavigateBack : () -> Unit,
+    onNavigateBack: () -> Unit,
     onNavigateToDetails: (zed.rainxch.githubstore.core.domain.model.GithubRepoSummary) -> Unit,
     viewModel: SearchViewModel = koinViewModel()
 ) {
@@ -97,7 +97,7 @@ fun SearchScreen(
                     .statusBarsPadding()
                     .padding(12.dp)
             ) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -171,8 +171,6 @@ fun SearchScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 12.dp)
         ) {
-            // Local state for sort sheet visibility
-            var sortSheetVisible by remember { mutableStateOf(false) }
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -198,7 +196,6 @@ fun SearchScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // Total results count (if available)
             if (state.totalCount != null) {
                 Text(
                     text = "About ${state.totalCount} results",
@@ -210,45 +207,41 @@ fun SearchScreen(
                 )
             }
 
-            // Sort by selector
-            Row(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable {
-                        // Open Sort bottom sheet
-                        sortSheetVisible = true
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
-            ) {
-                Text(
-                    text = "Sort by: ${state.selectedSortBy.displayText()}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Bold
-                )
+            if (false) { // FOR NOW SORTING FEATURE IS NOT AVAILABLE
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable {
 
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.outline,
-                )
-            }
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+                ) {
+                    Text(
+                        text = "Sort by: ${state.selectedSortBy.displayText()}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.outline,
+                        fontWeight = FontWeight.Bold
+                    )
 
-            if (sortSheetVisible) {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.outline,
+                    )
+                }
                 SortByBottomSheet(
                     sortByOptions = SortBy.entries.toList(),
                     selectedSortBy = state.selectedSortBy,
                     onSortBySelected = { chosen ->
                         onAction(SearchAction.OnSortBySelected(chosen))
                     },
-                    onDismissRequest = { sortSheetVisible = false }
+                    onDismissRequest = { }
                 )
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                // Initial loading
                 if (state.isLoading && state.repositories.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -258,7 +251,6 @@ fun SearchScreen(
                     }
                 }
 
-                // Error state
                 if (state.errorMessage != null && state.repositories.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -274,7 +266,6 @@ fun SearchScreen(
                     }
                 }
 
-                // Repositories list
                 if (state.repositories.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -293,7 +284,6 @@ fun SearchScreen(
                             )
                         }
 
-                        // Load more trigger
                         if (state.hasMorePages) {
                             item {
                                 LaunchedEffect(Unit) {

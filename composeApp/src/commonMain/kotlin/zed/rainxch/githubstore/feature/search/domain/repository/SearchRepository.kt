@@ -8,7 +8,6 @@ import zed.rainxch.githubstore.feature.search.domain.model.SortBy
 interface SearchRepository {
     fun searchRepositories(
         query: String,
-        sortBy: SortBy,
         searchPlatformType: SearchPlatformType,
         page: Int
     ): Flow<PaginatedRepos>
