@@ -229,7 +229,9 @@ fun DetailsScreen(
                             content = state.readmeMarkdown,
                             colors = rememberMarkdownColors(),
                             typography = rememberMarkdownTypography(),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            flavour = GFMFlavourDescriptor(),
+                            imageTransformer = Coil3ImageTransformerImpl,
                         )
                     }
                 }
