@@ -1,37 +1,22 @@
-package zed.rainxch.githubstore.feature.install
+package zed.rainxch.githubstore.feature.details.data
 
 import android.app.DownloadManager
 import android.content.Context
-import android.media.MediaScannerConnection
 import android.net.Uri
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.HttpTimeoutConfig
-import io.ktor.client.plugins.timeout
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.http.isSuccess
-import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.util.UUID
-import androidx.core.net.toUri
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.isActive
 import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
+import zed.rainxch.githubstore.feature.install.DownloadProgress
+import zed.rainxch.githubstore.feature.install.Downloader
+import zed.rainxch.githubstore.feature.install.FileLocationsProvider
 
 class AndroidDownloader(
     private val context: Context,
@@ -53,7 +38,13 @@ class AndroidDownloader(
         val tentativeDestination = File(dir, safeName)
 
         if (tentativeDestination.exists() && tentativeDestination.length() > 0) {
-            emit(DownloadProgress(tentativeDestination.length(), tentativeDestination.length(), 100))
+            emit(
+                DownloadProgress(
+                    tentativeDestination.length(),
+                    tentativeDestination.length(),
+                    100
+                )
+            )
             return@flow
         }
 
@@ -102,7 +93,13 @@ class AndroidDownloader(
                         val reason = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
                         throw IllegalStateException("Download failed: $reason")
                     }
-                    else -> emit(DownloadProgress(downloaded, if (total >= 0) total else null, percent))
+                    else -> emit(
+                        DownloadProgress(
+                            downloaded,
+                            if (total >= 0) total else null,
+                            percent
+                        )
+                    )
                 }
             } else {
                 throw IllegalStateException("Download ID not found: $downloadId")

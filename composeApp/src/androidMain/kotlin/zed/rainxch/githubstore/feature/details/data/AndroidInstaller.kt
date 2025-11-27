@@ -1,14 +1,15 @@
-package zed.rainxch.githubstore.feature.install
+package zed.rainxch.githubstore.feature.details.data
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.FileProvider
 import java.io.File
 import androidx.core.net.toUri
+import zed.rainxch.githubstore.feature.install.FileLocationsProvider
+import zed.rainxch.githubstore.feature.install.Installer
 
 class AndroidInstaller(
     private val context: Context,
