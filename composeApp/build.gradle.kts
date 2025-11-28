@@ -24,9 +24,9 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_20)
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -147,7 +147,16 @@ compose.desktop {
         mainClass = "zed.rainxch.githubstore.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+
+                TargetFormat.Exe,
+                TargetFormat.Msi,
+                
+                TargetFormat.Deb,
+                TargetFormat.Rpm,
+            )
             packageName = "Github Store"
             packageVersion = "1.0.0"
 
