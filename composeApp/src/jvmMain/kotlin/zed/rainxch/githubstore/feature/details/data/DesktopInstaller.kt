@@ -84,6 +84,20 @@ class DesktopInstaller(
     }
 
     private fun detectSystemArchitecture(): Architecture {
+        if (platform == PlatformType.MACOS) {
+            try {
+                val process = ProcessBuilder("uname", "-m").start()
+                val output = process.inputStream.bufferedReader().readText().trim()
+                process.waitFor()
+
+                return when (output) {
+                    "arm64" -> Architecture.AARCH64
+                    "x86_64" -> Architecture.X86_64
+                    else -> Architecture.fromString(System.getProperty("os.arch"))
+                }
+            } catch (_: Exception) { }
+        }
+
         val osArch = System.getProperty("os.arch") ?: return Architecture.UNKNOWN
         return Architecture.fromString(osArch)
     }
@@ -126,6 +140,17 @@ class DesktopInstaller(
 
     private fun isArchitectureCompatible(assetName: String, systemArch: Architecture): Boolean {
         val name = assetName.lowercase()
+
+        if (platform == PlatformType.MACOS) {
+            if (name.contains("universal") || name.contains("darwin")) {
+                return true
+            }
+
+            if ((name.endsWith(".dmg") || name.endsWith(".pkg")) &&
+                !listOf("x86_64", "amd64", "arm64", "aarch64").any { name.contains(it) }) {
+                return true
+            }
+        }
 
         val hasArchInName = listOf(
             "x86_64", "amd64", "x64",
@@ -254,14 +279,60 @@ class DesktopInstaller(
             "dmg" -> {
                 val pb = ProcessBuilder("open", file.absolutePath)
                 pb.start()
+
+                tryShowNotification(
+                    title = "Installation Started",
+                    message = "Please drag the application to your Applications folder"
+                )
             }
 
             "pkg" -> {
-                val pb = ProcessBuilder("open", file.absolutePath)
-                pb.start()
+                try {
+                    val script = """
+                    do shell script "installer -pkg '${file.absolutePath}' -target /" with administrator privileges
+                """.trimIndent()
+
+                    val pb = ProcessBuilder("osascript", "-e", script)
+                    val process = pb.start()
+                    val exitCode = process.waitFor()
+
+                    if (exitCode != 0) {
+                        throw IOException("Installation cancelled or failed")
+                    }
+
+                    Logger.d { "PKG installed successfully" }
+                } catch (e: Exception) {
+                    Logger.w { "Automated install failed, opening installer GUI: ${e.message}" }
+                    ProcessBuilder("open", file.absolutePath).start()
+                }
             }
 
             else -> throw IllegalArgumentException("Unsupported macOS installer: .$ext")
+        }
+    }
+
+    private fun tryShowNotification(title: String, message: String) {
+        if (platform == PlatformType.MACOS) {
+            try {
+                val script = """
+                display notification "$message" with title "$title"
+            """.trimIndent()
+                ProcessBuilder("osascript", "-e", script).start()
+            } catch (e: Exception) {
+                Logger.w { "Could not show macOS notification: ${e.message}" }
+            }
+        } else {
+            try {
+                ProcessBuilder(
+                    "notify-send",
+                    title,
+                    message,
+                    "-u", "critical",
+                    "-t", "10000"
+                ).start()
+            } catch (e: Exception) {
+                Logger.w { "Could not show notification: ${e.message}" }
+            }
         }
     }
 
@@ -536,20 +607,6 @@ class DesktopInstaller(
         }
 
         return linuxTerminals
-    }
-
-    private fun tryShowNotification(title: String, message: String) {
-        try {
-            ProcessBuilder(
-                "notify-send",
-                title,
-                message,
-                "-u", "critical",
-                "-t", "10000"
-            ).start()
-        } catch (e: Exception) {
-            Logger.w { "Could not show notification: ${e.message}" }
-        }
     }
 
     private fun tryCopyToClipboard(text: String) {
