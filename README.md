@@ -4,7 +4,7 @@
 
 </div>
 
-<h1 align="center">GithubStore</h1>
+<h1 align="center">Github Store</h1>
 
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
