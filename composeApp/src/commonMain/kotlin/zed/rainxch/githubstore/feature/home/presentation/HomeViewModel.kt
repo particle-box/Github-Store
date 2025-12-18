@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import zed.rainxch.githubstore.feature.home.domain.model.TrendingPeriod
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
 import zed.rainxch.githubstore.feature.home.presentation.model.HomeCategory
 
@@ -66,9 +67,9 @@ class HomeViewModel(
 
             try {
                 val flow = when (targetCategory) {
-                    HomeCategory.POPULAR -> homeRepository.getTrendingRepositories(nextPageIndex)
-                    HomeCategory.LATEST_UPDATED -> homeRepository.getLatestUpdated(nextPageIndex)
+                    HomeCategory.TRENDING -> homeRepository.getTrendingRepositories(nextPageIndex)
                     HomeCategory.NEW -> homeRepository.getNew(nextPageIndex)
+                    HomeCategory.RECENTLY_UPDATED -> homeRepository.getRecentlyUpdated(nextPageIndex)
                 }
 
                 flow.collect { paginatedRepos ->

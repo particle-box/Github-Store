@@ -30,6 +30,7 @@ import zed.rainxch.githubstore.core.domain.Platform
 import zed.rainxch.githubstore.core.domain.model.PlatformType
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
 import zed.rainxch.githubstore.feature.home.domain.model.PaginatedRepos
+import zed.rainxch.githubstore.feature.home.domain.model.TrendingPeriod
 import zed.rainxch.githubstore.network.RateLimitException
 import zed.rainxch.githubstore.network.safeApiCall
 import kotlin.time.Clock
@@ -42,32 +43,46 @@ class HomeRepositoryImpl(
     private val appStateManager: AppStateManager
 ) : HomeRepository {
 
-    override fun getTrendingRepositories(page: Int): Flow<PaginatedRepos> =
-        searchReposWithInstallersFlow(
-            baseQuery = "stars:>500 archived:false",
+    @OptIn(ExperimentalTime::class)
+    override fun getTrendingRepositories(page: Int): Flow<PaginatedRepos> {
+        val oneWeekAgo = Clock.System.now()
+            .minus(7.days)
+            .toLocalDateTime(TimeZone.UTC)
+            .date
+
+        return searchReposWithInstallersFlow(
+            baseQuery = "stars:>500 archived:false pushed:>=$oneWeekAgo",
             sort = "stars",
             order = "desc",
             startPage = page
         )
-
-    override fun getLatestUpdated(page: Int): Flow<PaginatedRepos> =
-        searchReposWithInstallersFlow(
-            baseQuery = "stars:>50 archived:false",
-            sort = "updated",
-            order = "desc",
-            startPage = page
-        )
+    }
 
     @OptIn(ExperimentalTime::class)
     override fun getNew(page: Int): Flow<PaginatedRepos> {
-        val sixMonthsAgo = Clock.System.now()
+        val thirtyDaysAgo = Clock.System.now()
             .minus(30.days)
             .toLocalDateTime(TimeZone.UTC)
             .date
 
         return searchReposWithInstallersFlow(
-            baseQuery = "stars:>5 archived:false created:>=$sixMonthsAgo",
+            baseQuery = "stars:>5 archived:false created:>=$thirtyDaysAgo",
             sort = "created",
+            order = "desc",
+            startPage = page
+        )
+    }
+
+    @OptIn(ExperimentalTime::class)
+    override fun getRecentlyUpdated(page: Int): Flow<PaginatedRepos> {
+        val threeDaysAgo = Clock.System.now()
+            .minus(3.days)
+            .toLocalDateTime(TimeZone.UTC)
+            .date
+
+        return searchReposWithInstallersFlow(
+            baseQuery = "stars:>50 archived:false pushed:>=$threeDaysAgo",
+            sort = "updated",
             order = "desc",
             startPage = page
         )

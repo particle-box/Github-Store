@@ -22,11 +22,7 @@ fun RowScope.HomeFilterChips(
     FilterChip(
         label = {
             Text(
-                text = when (category) {
-                    HomeCategory.POPULAR -> "Popular"
-                    HomeCategory.LATEST_UPDATED -> "Latest"
-                    HomeCategory.NEW -> "New"
-                },
+                text = category.displayText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
