@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import zed.rainxch.githubstore.feature.settings.presentation.SettingsAction
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.logout(
     onAction: (SettingsAction) -> Unit,
 ) {
@@ -48,6 +50,7 @@ fun LazyListScope.logout(
                 title = "Logout",
                 actions = {
                     IconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             onAction(SettingsAction.OnLogoutClick)
                         },
@@ -67,6 +70,7 @@ fun LazyListScope.logout(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AccountItem(
     icon: ImageVector,
@@ -82,6 +86,7 @@ private fun AccountItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
+            shapes = IconButtonDefaults.shapes(),
             onClick = { },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer,

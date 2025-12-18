@@ -135,6 +135,7 @@ fun LazyListScope.author(
 
                 if(false) { // For now invisible
                     IconButton(
+//                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             author?.id?.toInt()?.let { authorId ->
                                 onAction(DetailsAction.OpenAuthorInApp(authorId))

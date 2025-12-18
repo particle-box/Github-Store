@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -39,6 +40,7 @@ import zed.rainxch.githubstore.feature.details.presentation.utils.LocalTopbarLiq
 import zed.rainxch.githubstore.feature.details.presentation.utils.extractArchitectureFromName
 import zed.rainxch.githubstore.feature.details.presentation.utils.isExactArchitectureMatch
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SmartInstallButton(
     isDownloading: Boolean,

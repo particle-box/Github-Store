@@ -12,9 +12,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -80,7 +83,7 @@ fun DetailsRoot(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DetailsScreen(
     state: DetailsState,
@@ -97,6 +100,7 @@ fun DetailsScreen(
                     title = { },
                     navigationIcon = {
                         IconButton(
+                            shapes = IconButtonDefaults.shapes(),
                             onClick = {
                                 onAction(DetailsAction.OnNavigateBackClick)
                             }
@@ -111,6 +115,7 @@ fun DetailsScreen(
                     actions = {
                         state.repository?.htmlUrl?.let {
                             IconButton(
+                                shapes = IconButtonDefaults.shapes(),
                                 onClick = {
                                     onAction(DetailsAction.OpenRepoInBrowser)
                                 },
@@ -148,7 +153,7 @@ fun DetailsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularWavyProgressIndicator()
                 }
 
                 return@Scaffold

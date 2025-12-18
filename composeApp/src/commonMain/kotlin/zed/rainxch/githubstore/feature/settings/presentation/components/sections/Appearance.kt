@@ -20,9 +20,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +36,7 @@ import zed.rainxch.githubstore.core.presentation.model.AppTheme
 import zed.rainxch.githubstore.core.presentation.theme.isDynamicColorAvailable
 import zed.rainxch.githubstore.feature.settings.presentation.SettingsAction
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.appearance(
     selectedThemeColor: AppTheme,
     onThemeColorSelected: (AppTheme) -> Unit,
@@ -89,9 +93,14 @@ fun LazyListScope.appearance(
                             Box(
                                 Modifier
                                     .size(50.dp)
-                                    .clip(CircleShape)
+                                    .clip(
+                                        if (selectedThemeColor == theme) {
+                                            MaterialShapes.Cookie9Sided.toShape()
+                                        } else CircleShape
+                                    )
                                     .background(
-                                        theme.primaryColor ?: MaterialTheme.colorScheme.primary
+                                        color = theme.primaryColor
+                                            ?: MaterialTheme.colorScheme.primary
                                     )
                                     .then(
                                         if (theme == AppTheme.DYNAMIC) {

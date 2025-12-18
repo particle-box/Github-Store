@@ -24,6 +24,7 @@ androidx-security-crypto = "1.1.0"
 koin = "4.1.1"
 koinComposeMultiplatform = "4.1.1"
 liquid = "1.1.0"
+material3 = "1.9.0-alpha04"
 multiplatformMarkdownRenderer = "0.38.1"
 navigationCompose = "2.9.1"
 datastore = "1.2.0"
@@ -71,6 +72,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 
 # Navigation
 liquid = { module = "io.github.fletchmckee.liquid:liquid", version.ref = "liquid" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 # Markdown

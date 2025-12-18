@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.OpenWith
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -66,6 +68,7 @@ fun AuthenticationRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AuthenticationScreen(
     state: AuthenticationState,
@@ -109,7 +112,7 @@ fun AuthenticationScreen(
                 }
 
                 is AuthLoginState.Pending -> {
-                    CircularProgressIndicator()
+                    CircularWavyProgressIndicator()
                     Spacer(Modifier.height(12.dp))
                     Text("Waiting for authorization...")
                 }
@@ -146,6 +149,7 @@ fun AuthenticationScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StateDevicePrompt(
     state: AuthenticationState,
@@ -177,6 +181,7 @@ fun StateDevicePrompt(
             )
 
             IconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = {
                     onAction(AuthenticationAction.CopyCode(authState.start))
                 },

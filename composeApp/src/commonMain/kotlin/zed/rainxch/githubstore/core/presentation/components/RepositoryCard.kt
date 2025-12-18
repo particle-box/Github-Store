@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import zed.rainxch.githubstore.core.domain.model.GithubUser
 import zed.rainxch.githubstore.core.presentation.theme.GithubStoreTheme
 import zed.rainxch.githubstore.core.presentation.utils.formatUpdatedAt
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RepositoryCard(
     repository: GithubRepoSummary,

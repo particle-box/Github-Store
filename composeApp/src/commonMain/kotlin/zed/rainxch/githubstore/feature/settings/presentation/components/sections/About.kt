@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import zed.rainxch.githubstore.feature.settings.presentation.SettingsAction
 import zed.rainxch.githubstore.feature.settings.presentation.utils.getVersionName
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.about(
     onAction: (SettingsAction) -> Unit,
 ) {
@@ -70,6 +72,7 @@ fun LazyListScope.about(
                 title = "Help & Support",
                 actions = {
                     IconButton(
+                        shape = IconButtonDefaults.shapes().shape,
                         onClick = {
                             onAction(SettingsAction.OnHelpClick)
                         },
@@ -89,6 +92,7 @@ fun LazyListScope.about(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AboutItem(
     icon: ImageVector,
@@ -104,6 +108,7 @@ private fun AboutItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
+            shapes = IconButtonDefaults.shapes(),
             onClick = { },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,

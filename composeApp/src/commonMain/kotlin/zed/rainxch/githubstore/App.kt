@@ -3,6 +3,8 @@ package zed.rainxch.githubstore
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +21,7 @@ import zed.rainxch.githubstore.app.navigation.AppNavigation
 import zed.rainxch.githubstore.app.navigation.GithubStoreGraph
 import zed.rainxch.githubstore.core.presentation.theme.GithubStoreTheme
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 @Preview
 fun App(
@@ -47,7 +50,7 @@ fun App(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularWavyProgressIndicator()
             }
 
             return@GithubStoreTheme
