@@ -24,10 +24,32 @@ jobs:
         run: chmod +x gradlew
         shell: bash
 
-      - name: Build Windows installers (EXE & MSI)
+      - name: Build Windows installers (EXE & MSI) with retries
         run: |
-          ./gradlew :composeApp:packageExe
-          ./gradlew :composeApp:packageMsi
+          set -euo pipefail
+
+          retry() {
+            local n=1
+            local max=3
+            local delay=5
+            while true; do
+              echo "Attempt #$n: $*"
+              if "$@"; then
+                break
+              fi
+              if [ $n -ge $max ]; then
+                echo "Command failed after $n attempts."
+                return 1
+              fi
+              n=$((n+1))
+              echo "Command failed — retrying in $delay seconds..."
+              sleep $delay
+              delay=$((delay*2))
+            done
+          }
+
+          retry ./gradlew :composeApp:packageExe --no-daemon
+          retry ./gradlew :composeApp:packageMsi --no-daemon
         shell: bash
 
       - name: Upload Windows installers
@@ -56,10 +78,33 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build macOS installers (DMG & PKG)
+      - name: Build macOS installers (DMG & PKG) with retries
         run: |
-          ./gradlew :composeApp:packageDmg
-          ./gradlew :composeApp:packagePkg
+          set -euo pipefail
+
+          retry() {
+            local n=1
+            local max=3
+            local delay=5
+            while true; do
+              echo "Attempt #$n: $*"
+              if "$@"; then
+                break
+              fi
+              if [ $n -ge $max ]; then
+                echo "Command failed after $n attempts."
+                return 1
+              fi
+              n=$((n+1))
+              echo "Command failed — retrying in $delay seconds..."
+              sleep $delay
+              delay=$((delay*2))
+            done
+          }
+
+          retry ./gradlew :composeApp:packageDmg --no-daemon
+          retry ./gradlew :composeApp:packagePkg --no-daemon
+        shell: bash
 
       - name: Upload macOS installers
         uses: actions/upload-artifact@v4
@@ -87,11 +132,33 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Linux installers (DEB, RPM & AppImage)
+      - name: Build Linux installers (DEB & RPM) with retries
         run: |
-          ./gradlew :composeApp:packageDeb
-          ./gradlew :composeApp:packageRpm
-          ./gradlew :composeApp:packageAppImage
+          set -euo pipefail
+
+          retry() {
+            local n=1
+            local max=3
+            local delay=5
+            while true; do
+              echo "Attempt #$n: $*"
+              if "$@"; then
+                break
+              fi
+              if [ $n -ge $max ]; then
+                echo "Command failed after $n attempts."
+                return 1
+              fi
+              n=$((n+1))
+              echo "Command failed — retrying in $delay seconds..."
+              sleep $delay
+              delay=$((delay*2))
+            done
+          }
+
+          retry ./gradlew :composeApp:packageDeb --no-daemon
+          retry ./gradlew :composeApp:packageRpm --no-daemon
+        shell: bash
 
       - name: Upload Linux installers
         uses: actions/upload-artifact@v4
@@ -100,5 +167,4 @@ jobs:
           path: |
             composeApp/build/compose/binaries/main/deb/*.deb
             composeApp/build/compose/binaries/main/rpm/*.rpm
-            composeApp/build/compose/binaries/main/app-image/*.AppImage
           retention-days: 30
