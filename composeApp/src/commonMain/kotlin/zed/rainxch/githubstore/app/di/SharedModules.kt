@@ -189,7 +189,6 @@ val detailsModule: Module = module {
             installedAppsRepository = get(),
             favoritesRepository = get(),
             packageMonitor = get<PackageMonitor>(),
-            dao = get()
         )
     }
 }

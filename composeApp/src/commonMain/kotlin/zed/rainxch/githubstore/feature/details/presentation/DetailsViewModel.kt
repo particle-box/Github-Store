@@ -47,7 +47,6 @@ class DetailsViewModel(
     private val installedAppsRepository: InstalledAppsRepository,
     private val favoritesRepository: FavoritesRepository,
     private val packageMonitor: PackageMonitor,
-    private val dao: InstalledAppDao
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -186,7 +185,7 @@ class DetailsViewModel(
                                                                 )
                                                                 Logger.d { "Synced external update to latest for ${dbApp.packageName}: versionName ${systemInfo.versionName}, code ${systemInfo.versionCode}" }
                                                             } else {
-                                                                dao.updateApp(dbApp.copy(
+                                                                installedAppsRepository.updateApp(dbApp.copy(
                                                                     installedVersionName = systemInfo.versionName,
                                                                     installedVersionCode = systemInfo.versionCode,
                                                                     installedVersion = systemInfo.versionName,
@@ -196,7 +195,7 @@ class DetailsViewModel(
                                                                 Logger.d { "Detected unknown external update for ${dbApp.packageName}" }
                                                             }
                                                         } else {
-                                                            dao.updateApp(dbApp.copy(
+                                                            installedAppsRepository.updateApp(dbApp.copy(
                                                                 installedVersionName = systemInfo.versionName,
                                                                 installedVersionCode = systemInfo.versionCode,
                                                                 installedVersion = systemInfo.versionName,
@@ -205,7 +204,7 @@ class DetailsViewModel(
                                                             ))
                                                         }
                                                     } else {
-                                                        dao.updateApp(dbApp.copy(
+                                                        installedAppsRepository.updateApp(dbApp.copy(
                                                             installedVersionName = systemInfo.versionName,
                                                             installedVersionCode = systemInfo.versionCode,
                                                             installedVersion = systemInfo.versionName,
@@ -214,7 +213,7 @@ class DetailsViewModel(
                                                         ))
                                                     }
                                                 } else {
-                                                    dao.updateApp(dbApp.copy(
+                                                    installedAppsRepository.updateApp(dbApp.copy(
                                                         installedVersionName = systemInfo.versionName,
                                                         installedVersionCode = systemInfo.versionCode,
                                                         installedVersion = systemInfo.versionName,
@@ -223,7 +222,7 @@ class DetailsViewModel(
                                                     ))
                                                 }
                                             } else {
-                                                dao.updateApp(dbApp.copy(
+                                                installedAppsRepository.updateApp(dbApp.copy(
                                                     installedVersionName = systemInfo.versionName,
                                                     installedVersionCode = systemInfo.versionCode,
                                                     installedVersion = systemInfo.versionName,
@@ -233,7 +232,7 @@ class DetailsViewModel(
                                             }
                                         } catch (e: Exception) {
                                             Logger.w { "Failed to sync external update: ${e.message}" }
-                                            dao.updateApp(dbApp.copy(
+                                            installedAppsRepository.updateApp(dbApp.copy(
                                                 installedVersionName = systemInfo.versionName,
                                                 installedVersionCode = systemInfo.versionCode,
                                                 installedVersion = systemInfo.versionName,
