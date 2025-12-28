@@ -1,6 +1,7 @@
 package zed.rainxch.githubstore.feature.home.presentation.components
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -29,7 +30,10 @@ fun RowScope.HomeFilterChips(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 softWrap = false,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         },
         shape = CircleShape,
