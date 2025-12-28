@@ -1,4 +1,4 @@
-package zed.rainxch.githubstore.core.presentation.model;
+package zed.rainxch.githubstore.core.presentation.model
 
 enum class FontTheme(val displayName: String) {
     SYSTEM("System"),
