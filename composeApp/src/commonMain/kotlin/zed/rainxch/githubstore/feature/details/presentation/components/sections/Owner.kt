@@ -2,9 +2,11 @@ package zed.rainxch.githubstore.feature.details.presentation.components.sections
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,14 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.skydoves.landscapist.coil3.CoilImage
 import githubstore.composeapp.generated.resources.Res
 import githubstore.composeapp.generated.resources.author
-import githubstore.composeapp.generated.resources.error_loading_details
 import githubstore.composeapp.generated.resources.ic_github
 import githubstore.composeapp.generated.resources.navigate_back
 import githubstore.composeapp.generated.resources.profile
@@ -41,6 +43,7 @@ import zed.rainxch.githubstore.core.domain.model.GithubUserProfile
 import zed.rainxch.githubstore.feature.details.presentation.DetailsAction
 import zed.rainxch.githubstore.feature.details.presentation.utils.LocalTopbarLiquidState
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.author(
     author: GithubUserProfile?,
     onAction: (DetailsAction) -> Unit
@@ -81,14 +84,20 @@ fun LazyListScope.author(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = author?.avatarUrl,
-                    contentDescription = null,
+                CoilImage(
+                    imageModel = { author?.avatarUrl },
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
                         .liquefiable(liquidState),
-                    contentScale = ContentScale.Crop,
+                    loading = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularWavyProgressIndicator()
+                        }
+                    }
                 )
 
                 Column(

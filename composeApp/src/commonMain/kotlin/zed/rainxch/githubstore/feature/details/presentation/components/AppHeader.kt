@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,17 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.skydoves.landscapist.coil3.CoilImage
 import githubstore.composeapp.generated.resources.Res
 import githubstore.composeapp.generated.resources.by_author
 import githubstore.composeapp.generated.resources.installed
 import githubstore.composeapp.generated.resources.installed_version
 import githubstore.composeapp.generated.resources.no_description
 import githubstore.composeapp.generated.resources.update_available
-import githubstore.composeapp.generated.resources.verifying
 import org.jetbrains.compose.resources.stringResource
 import zed.rainxch.githubstore.core.data.local.db.entities.InstalledApp
 import zed.rainxch.githubstore.core.domain.model.GithubRelease
@@ -48,6 +48,7 @@ import zed.rainxch.githubstore.core.domain.model.GithubRepoSummary
 import zed.rainxch.githubstore.core.domain.model.GithubUserProfile
 import zed.rainxch.githubstore.feature.details.presentation.DownloadStage
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppHeader(
     author: GithubUserProfile?,
@@ -74,9 +75,8 @@ fun AppHeader(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(100.dp)
             ) {
-                AsyncImage(
-                    model = author?.avatarUrl,
-                    contentDescription = null,
+                CoilImage(
+                    imageModel = { author?.avatarUrl },
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
@@ -85,7 +85,14 @@ fun AppHeader(
                             color = MaterialTheme.colorScheme.outlineVariant,
                             shape = CircleShape
                         ),
-                    contentScale = ContentScale.Crop
+                    loading = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularWavyProgressIndicator()
+                        }
+                    }
                 )
 
                 if (downloadStage != DownloadStage.IDLE) {

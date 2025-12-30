@@ -130,6 +130,9 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
+
+            implementation(libs.landscapist.core)
+            implementation(libs.landscapist.image)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

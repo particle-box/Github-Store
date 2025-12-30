@@ -1,9 +1,11 @@
 package zed.rainxch.githubstore.core.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,18 +30,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.skydoves.landscapist.coil3.CoilImage
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.crossfade.CrossfadePlugin
 import githubstore.composeapp.generated.resources.Res
 import githubstore.composeapp.generated.resources.home_view_details
 import githubstore.composeapp.generated.resources.installed
 import githubstore.composeapp.generated.resources.open_in_browser
 import githubstore.composeapp.generated.resources.update_available
-import githubstore.composeapp.generated.resources.updated_yesterday
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import zed.rainxch.githubstore.core.domain.model.GithubRepoSummary
@@ -73,13 +76,22 @@ fun RepositoryCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AsyncImage(
-                    model = repository.owner.avatarUrl,
-                    contentDescription = null,
+                CoilImage(
+                    imageModel = { repository.owner.avatarUrl },
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    loading = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularWavyProgressIndicator()
+                        }
+                    },
+                    component = rememberImageComponent {
+                        CrossfadePlugin()
+                    }
                 )
 
                 Text(

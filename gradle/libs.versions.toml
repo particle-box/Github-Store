@@ -23,6 +23,7 @@ kotlinx-serialization = "1.9.0"
 androidx-security-crypto = "1.1.0"
 koin = "4.1.1"
 koinComposeMultiplatform = "4.1.1"
+landscapist = "2.8.1"
 liquid = "1.1.0"
 material3 = "1.9.0-alpha04"
 multiplatformMarkdownRenderer = "0.38.1"
@@ -74,6 +75,8 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 
 # Navigation
+landscapist-image = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapist" }
+landscapist-core = { module = "com.github.skydoves:landscapist-core", version.ref = "landscapist" }
 liquid = { module = "io.github.fletchmckee.liquid:liquid", version.ref = "liquid" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
