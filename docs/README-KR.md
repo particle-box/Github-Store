@@ -68,7 +68,14 @@ GitHub Releases를 깔끔한 앱 스토어 형태의 경험으로 바꿔줍니�
 > 이는 App Store 외부에서 배포되며 아직 공증되지 않았기 때문입니다.
 > 시스템 설정 → 개인정보 보호 및 보안 → 그대로 열기를 통해 실행할 수 있습니다.
 
----
+## 🏆 소개된 곳
+
+<a href="https://www.youtube.com/@howtomen">
+  <img src="https://img.shields.io/badge/Featured%20by-HowToMen-red?logo=youtube" alt="HowToMen에서 소개됨">
+</a>
+
+- **HowToMen**: [2026년 최고의 안드로이드 앱 TOP 20 (구독자 86만 명)](https://www.youtube.com/watch?v=7favc9MDedQ)
+- **F-Droid**: [앱 스토어 카테고리 1위](https://f-droid.org/en/categories/app-store-updater/)
 
 ## 🚀 주요 기능
 
@@ -210,6 +217,26 @@ GitHub Store는 비공개 인덱싱이나 수동 큐레이션을 사용하지 �
 - **오픈 소스이며 확장 가능**
 
 ---
+
+## 💖 프로젝트 지원하기
+
+GitHub Store는 무료이며 앞으로도 계속 무료로 제공됩니다.  
+이 프로젝트가 도움이 되었다면 아래 방법으로 지원해 주세요:
+
+<a href="https://github.com/sponsors/rainxchzed">
+  <img src="https://img.shields.io/badge/Sponsor-GitHub-pink?logo=github" alt="GitHub에서 후원하기">
+</a>
+
+<a href="https://www.buymeacoffee.com/rainxchzed">
+  <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black" alt="커피 한 잔 사주기">
+</a>
+
+여러분의 지원은 다음을 가능하게 합니다:
+- 2만 명 이상의 사용자를 위한 앱 유지 관리
+- 새로운 기능 개발
+- 개발자를 위한 더 많은 무료 도구 제작
+
+또는 저장소에 ⭐를 눌러주시고 다른 사람들과 공유해 주세요!
 
 ## ⚠️ 면책 조항
 
