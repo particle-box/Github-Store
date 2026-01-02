@@ -242,6 +242,10 @@ GitHub Store is free and always will be. If it's helped you, consider:
   <img src="https://img.shields.io/badge/Sponsor-GitHub-pink?logo=github" alt="Sponsor on GitHub">
 </a>
 
+<a href="https://www.buymeacoffee.com/rainxchzed">
+  <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee">
+</a>
+
 Your support helps me:
 - Maintain the app for 20K+ users
 - Build new features
