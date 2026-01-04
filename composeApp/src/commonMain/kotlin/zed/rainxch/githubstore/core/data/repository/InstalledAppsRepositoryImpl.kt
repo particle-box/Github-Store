@@ -1,8 +1,11 @@
 package zed.rainxch.githubstore.core.data.repository
 
+import androidx.room.immediateTransaction
+import androidx.room.useWriterConnection
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import zed.rainxch.githubstore.core.data.local.db.AppDatabase
 import zed.rainxch.githubstore.core.data.local.db.dao.InstalledAppDao
 import zed.rainxch.githubstore.core.data.local.db.dao.UpdateHistoryDao
 import zed.rainxch.githubstore.core.data.local.db.entities.InstallSource
@@ -15,12 +18,21 @@ import zed.rainxch.githubstore.feature.details.domain.repository.DetailsReposito
 import java.io.File
 
 class InstalledAppsRepositoryImpl(
+    private val database: AppDatabase,
     private val dao: InstalledAppDao,
     private val historyDao: UpdateHistoryDao,
     private val detailsRepository: DetailsRepository,
     private val installer: Installer,
     private val downloader: Downloader
 ) : InstalledAppsRepository {
+
+    override suspend fun <R> executeInTransaction(block: suspend () -> R): R {
+        return database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                block()
+            }
+        }
+    }
 
     override fun getAllInstalledApps(): Flow<List<InstalledApp>> = dao.getAllInstalledApps()
 

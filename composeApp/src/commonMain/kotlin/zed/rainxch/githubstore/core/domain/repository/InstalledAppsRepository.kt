@@ -27,4 +27,6 @@ interface InstalledAppsRepository {
     )
     suspend fun updateApp(app: InstalledApp)
     suspend fun updatePendingStatus(packageName: String, isPending: Boolean)
+
+    suspend fun <R> executeInTransaction(block: suspend () -> R): R
 }

@@ -33,6 +33,7 @@ import zed.rainxch.githubstore.feature.details.domain.repository.DetailsReposito
 import zed.rainxch.githubstore.feature.details.presentation.DetailsViewModel
 import zed.rainxch.githubstore.core.data.services.Downloader
 import zed.rainxch.githubstore.core.data.services.Installer
+import zed.rainxch.githubstore.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.githubstore.feature.home.data.data_source.CachedTrendingDataSource
 import zed.rainxch.githubstore.feature.home.data.repository.HomeRepositoryImpl
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
@@ -91,6 +92,14 @@ val coreModule: Module = module {
     single { get<AppDatabase>().favoriteRepoDao }
     single { get<AppDatabase>().updateHistoryDao }
 
+    single<SyncInstalledAppsUseCase> {
+        SyncInstalledAppsUseCase(
+            packageMonitor = get(),
+            installedAppsRepository = get(),
+            platform = get()
+        )
+    }
+
     // Repositories
     single<FavoritesRepository> {
         FavoritesRepositoryImpl(
@@ -102,6 +111,7 @@ val coreModule: Module = module {
 
     single<InstalledAppsRepository> {
         InstalledAppsRepositoryImpl(
+            database = get(),
             dao = get(),
             historyDao = get(),
             detailsRepository = get(),
@@ -162,7 +172,8 @@ val homeModule: Module = module {
         HomeViewModel(
             homeRepository = get(),
             installedAppsRepository = get(),
-            platform = get()
+            platform = get(),
+            syncInstalledAppsUseCase = get()
         )
     }
 }
@@ -208,6 +219,7 @@ val detailsModule: Module = module {
             installedAppsRepository = get(),
             favoritesRepository = get(),
             packageMonitor = get<PackageMonitor>(),
+            syncInstalledAppsUseCase = get()
         )
     }
 }
@@ -247,7 +259,9 @@ val appsModule: Module = module {
             installer = get(),
             downloader = get(),
             packageMonitor = get(),
-            detailsRepository = get()
+            detailsRepository = get(),
+            platform = get(),
+            syncInstalledAppsUseCase = get()
         )
     }
 }

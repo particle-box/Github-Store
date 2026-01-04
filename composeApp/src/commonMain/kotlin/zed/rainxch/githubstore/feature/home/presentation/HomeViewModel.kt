@@ -13,6 +13,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -21,13 +22,15 @@ import org.jetbrains.compose.resources.getString
 import zed.rainxch.githubstore.core.domain.Platform
 import zed.rainxch.githubstore.core.domain.model.PlatformType
 import zed.rainxch.githubstore.core.domain.repository.InstalledAppsRepository
+import zed.rainxch.githubstore.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
 import zed.rainxch.githubstore.feature.home.presentation.model.HomeCategory
 
 class HomeViewModel(
     private val homeRepository: HomeRepository,
     private val installedAppsRepository: InstalledAppsRepository,
-    private val platform: Platform
+    private val platform: Platform,
+    private val syncInstalledAppsUseCase: SyncInstalledAppsUseCase
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -38,10 +41,10 @@ class HomeViewModel(
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
+                syncSystemState()
+
                 loadPlatform()
-
                 loadRepos(isInitial = true)
-
                 observeInstalledApps()
 
                 hasLoadedInitialData = true
@@ -53,11 +56,25 @@ class HomeViewModel(
             initialValue = HomeState()
         )
 
-    private fun loadPlatform() {
+    /**
+     * Sync system state to ensure DB is up-to-date before loading.
+     */
+    private fun syncSystemState() {
         viewModelScope.launch {
-            _state.update { it.copy(
-                isAppsSectionVisible = platform.type == PlatformType.ANDROID
-            ) }
+            try {
+                val result = syncInstalledAppsUseCase()
+                if (result.isFailure) {
+                    Logger.w { "Initial sync had issues: ${result.exceptionOrNull()?.message}" }
+                }
+            } catch (e: Exception) {
+                Logger.e { "Initial sync failed: ${e.message}" }
+            }
+        }
+    }
+
+    private fun loadPlatform() {
+        _state.update {
+            it.copy(isAppsSectionVisible = platform.type == PlatformType.ANDROID)
         }
     }
 
@@ -121,34 +138,31 @@ class HomeViewModel(
 
                     this@HomeViewModel.nextPageIndex = paginatedRepos.nextPageIndex
 
-                    coroutineScope {
-                        val newReposWithStatus = paginatedRepos.repos.map { repo ->
-                            async {
-                                val app = installedAppsRepository.getAppByRepoId(repo.id)
-                                val isUpdateAvailable = if (app?.packageName != null) {
-                                    installedAppsRepository.checkForUpdates(app.packageName)
-                                } else false
+                    val installedAppsMap = installedAppsRepository
+                        .getAllInstalledApps()
+                        .first()
+                        .associateBy { it.repoId }
 
-                                HomeRepo(
-                                    isInstalled = app != null,
-                                    isUpdateAvailable = isUpdateAvailable,
-                                    repo = repo
-                                )
-                            }
-                        }.awaitAll()
+                    val newReposWithStatus = paginatedRepos.repos.map { repo ->
+                        val app = installedAppsMap[repo.id]
+                        HomeRepo(
+                            isInstalled = app != null,
+                            isUpdateAvailable = app?.isUpdateAvailable ?: false,
+                            repo = repo
+                        )
+                    }
 
-                        _state.update { currentState ->
-                            val rawList = currentState.repos + newReposWithStatus
-                            val uniqueList = rawList.distinctBy { it.repo.fullName }
+                    _state.update { currentState ->
+                        val rawList = currentState.repos + newReposWithStatus
+                        val uniqueList = rawList.distinctBy { it.repo.fullName }
 
-                            currentState.copy(
-                                repos = uniqueList,
-                                hasMorePages = paginatedRepos.hasMore,
-                                errorMessage = if (uniqueList.isEmpty() && !paginatedRepos.hasMore) {
-                                    getString(Res.string.no_repositories_found)
-                                } else null
-                            )
-                        }
+                        currentState.copy(
+                            repos = uniqueList,
+                            hasMorePages = paginatedRepos.hasMore,
+                            errorMessage = if (uniqueList.isEmpty() && !paginatedRepos.hasMore) {
+                                getString(Res.string.no_repositories_found)
+                            } else null
+                        )
                     }
                 }
 
@@ -178,8 +192,11 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.Refresh -> {
-                nextPageIndex = 1
-                loadRepos(isInitial = true)
+                viewModelScope.launch {
+                    syncInstalledAppsUseCase()
+                    nextPageIndex = 1
+                    loadRepos(isInitial = true)
+                }
             }
 
             HomeAction.Retry -> {

@@ -5,17 +5,20 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import githubstore.composeapp.generated.resources.Res
 import githubstore.composeapp.generated.resources.installer_saved_downloads
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -33,6 +36,7 @@ import zed.rainxch.githubstore.core.domain.repository.InstalledAppsRepository
 import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
 import zed.rainxch.githubstore.core.data.services.Downloader
 import zed.rainxch.githubstore.core.data.services.Installer
+import zed.rainxch.githubstore.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.githubstore.feature.details.domain.repository.DetailsRepository
 import zed.rainxch.githubstore.feature.details.presentation.model.LogResult
 import java.io.File
@@ -49,6 +53,7 @@ class DetailsViewModel(
     private val installedAppsRepository: InstalledAppsRepository,
     private val favoritesRepository: FavoritesRepository,
     private val packageMonitor: PackageMonitor,
+    private val syncInstalledAppsUseCase: SyncInstalledAppsUseCase
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -77,6 +82,11 @@ class DetailsViewModel(
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+
+                val syncResult = syncInstalledAppsUseCase()
+                if (syncResult.isFailure) {
+                    Logger.w { "Sync had issues but continuing: ${syncResult.exceptionOrNull()?.message}" }
+                }
 
                 val repo = detailsRepository.getRepositoryById(repositoryId.toLong())
                 val owner = repo.owner.login
@@ -131,163 +141,21 @@ class DetailsViewModel(
                         val dbApp = installedAppsRepository.getAppByRepoId(repo.id)
 
                         if (dbApp != null) {
-                            val isActuallyInstalled =
-                                packageMonitor.isPackageInstalled(dbApp.packageName)
-                            if (!isActuallyInstalled) {
-                                if (dbApp.isPendingInstall) {
-                                    val timeSince =
-                                        System.now().toEpochMilliseconds() - dbApp.installedAt
-                                    if (timeSince > 600000) {
-                                        installedAppsRepository.deleteInstalledApp(dbApp.packageName)
-                                        null
-                                    } else {
-                                        dbApp
-                                    }
-                                } else {
-                                    installedAppsRepository.deleteInstalledApp(dbApp.packageName)
-                                    null
-                                }
+                            if (dbApp.isPendingInstall &&
+                                packageMonitor.isPackageInstalled(dbApp.packageName)) {
+                                installedAppsRepository.updatePendingStatus(
+                                    dbApp.packageName,
+                                    false
+                                )
+                                installedAppsRepository.getAppByPackage(dbApp.packageName)
                             } else {
-                                if (dbApp.isPendingInstall) {
-                                    installedAppsRepository.updatePendingStatus(
-                                        dbApp.packageName,
-                                        false
-                                    )
-                                }
-                                val systemInfo =
-                                    packageMonitor.getInstalledPackageInfo(dbApp.packageName)
-                                if (systemInfo != null) {
-                                    val normalizedSystemName =
-                                        normalizeVersion(systemInfo.versionName)
-                                    val normalizedDbName =
-                                        normalizeVersion(dbApp.installedVersionName.orEmpty())
-                                    if (normalizedSystemName != normalizedDbName ||
-                                        systemInfo.versionCode != dbApp.installedVersionCode
-                                    ) {
-                                        try {
-                                            val latestRelease =
-                                                detailsRepository.getLatestPublishedRelease(
-                                                    owner = dbApp.repoOwner,
-                                                    repo = dbApp.repoName,
-                                                    defaultBranch = ""
-                                                )
-                                            if (latestRelease != null) {
-                                                val installableAssets =
-                                                    latestRelease.assets.filter { asset ->
-                                                        installer.isAssetInstallable(asset.name)
-                                                    }
-                                                val primaryAsset =
-                                                    installer.choosePrimaryAsset(installableAssets)
-                                                if (primaryAsset != null) {
-                                                    val tempAssetName = primaryAsset.name + ".tmp"
-                                                    downloader.download(
-                                                        primaryAsset.downloadUrl,
-                                                        tempAssetName
-                                                    ).collect { }
-                                                    val tempPath = downloader.getDownloadedFilePath(
-                                                        tempAssetName
-                                                    )
-                                                    if (tempPath != null) {
-                                                        val latestInfo =
-                                                            installer.getApkInfoExtractor()
-                                                                .extractPackageInfo(tempPath)
-                                                        File(tempPath).delete()
-                                                        if (latestInfo != null) {
-                                                            val normalizedLatestName =
-                                                                normalizeVersion(
-                                                                    latestInfo.versionName
-                                                                )
-                                                            if (normalizedSystemName == normalizedLatestName &&
-                                                                systemInfo.versionCode == latestInfo.versionCode
-                                                            ) {
-                                                                installedAppsRepository.updateAppVersion(
-                                                                    packageName = dbApp.packageName,
-                                                                    newTag = latestRelease.tagName,
-                                                                    newAssetName = primaryAsset.name,
-                                                                    newAssetUrl = primaryAsset.downloadUrl,
-                                                                    newVersionName = systemInfo.versionName,
-                                                                    newVersionCode = systemInfo.versionCode
-                                                                )
-                                                                Logger.d { "Synced external update to latest for ${dbApp.packageName}: versionName ${systemInfo.versionName}, code ${systemInfo.versionCode}" }
-                                                            } else {
-                                                                installedAppsRepository.updateApp(
-                                                                    dbApp.copy(
-                                                                        installedVersionName = systemInfo.versionName,
-                                                                        installedVersionCode = systemInfo.versionCode,
-                                                                        installedVersion = systemInfo.versionName,
-                                                                        installSource = InstallSource.UNKNOWN,
-                                                                        isUpdateAvailable = true
-                                                                    )
-                                                                )
-                                                                Logger.d { "Detected unknown external update for ${dbApp.packageName}" }
-                                                            }
-                                                        } else {
-                                                            installedAppsRepository.updateApp(
-                                                                dbApp.copy(
-                                                                    installedVersionName = systemInfo.versionName,
-                                                                    installedVersionCode = systemInfo.versionCode,
-                                                                    installedVersion = systemInfo.versionName,
-                                                                    installSource = InstallSource.UNKNOWN,
-                                                                    isUpdateAvailable = true
-                                                                )
-                                                            )
-                                                        }
-                                                    } else {
-                                                        installedAppsRepository.updateApp(
-                                                            dbApp.copy(
-                                                                installedVersionName = systemInfo.versionName,
-                                                                installedVersionCode = systemInfo.versionCode,
-                                                                installedVersion = systemInfo.versionName,
-                                                                installSource = InstallSource.UNKNOWN,
-                                                                isUpdateAvailable = true
-                                                            )
-                                                        )
-                                                    }
-                                                } else {
-                                                    installedAppsRepository.updateApp(
-                                                        dbApp.copy(
-                                                            installedVersionName = systemInfo.versionName,
-                                                            installedVersionCode = systemInfo.versionCode,
-                                                            installedVersion = systemInfo.versionName,
-                                                            installSource = InstallSource.UNKNOWN,
-                                                            isUpdateAvailable = true
-                                                        )
-                                                    )
-                                                }
-                                            } else {
-                                                installedAppsRepository.updateApp(
-                                                    dbApp.copy(
-                                                        installedVersionName = systemInfo.versionName,
-                                                        installedVersionCode = systemInfo.versionCode,
-                                                        installedVersion = systemInfo.versionName,
-                                                        installSource = InstallSource.UNKNOWN,
-                                                        isUpdateAvailable = true
-                                                    )
-                                                )
-                                            }
-                                        } catch (e: Exception) {
-                                            Logger.w { "Failed to sync external update: ${e.message}" }
-                                            installedAppsRepository.updateApp(
-                                                dbApp.copy(
-                                                    installedVersionName = systemInfo.versionName,
-                                                    installedVersionCode = systemInfo.versionCode,
-                                                    installedVersion = systemInfo.versionName,
-                                                    installSource = InstallSource.UNKNOWN,
-                                                    isUpdateAvailable = true
-                                                )
-                                            )
-                                        }
-                                    }
-                                    installedAppsRepository.getAppByPackage(dbApp.packageName)
-                                } else {
-                                    dbApp
-                                }
+                                dbApp
                             }
                         } else {
                             null
                         }
                     } catch (t: Throwable) {
-                        Logger.e { "Failed to check installed app: ${t.message}" }
+                        Logger.e { "Failed to load installed app: ${t.message}" }
                         null
                     }
                 }
@@ -346,6 +214,55 @@ class DetailsViewModel(
                     isLoading = false,
                     errorMessage = t.message ?: "Failed to load details"
                 )
+            }
+        }
+    }
+
+    private suspend fun syncSystemExistenceAndMigrate() {
+        withContext(Dispatchers.IO) {
+            try {
+                val installedPackageNames = packageMonitor.getAllInstalledPackageNames()
+                val appsInDb = installedAppsRepository.getAllInstalledApps().first()
+
+                appsInDb.forEach { app ->
+                    if (!installedPackageNames.contains(app.packageName)) {
+                        Logger.d { "App ${app.packageName} no longer installed, removing from DB" }
+                        installedAppsRepository.deleteInstalledApp(app.packageName)
+                    } else if (app.installedVersionName == null) {
+                        if (platform.type == PlatformType.ANDROID) {
+                            val systemInfo = packageMonitor.getInstalledPackageInfo(app.packageName)
+                            if (systemInfo != null) {
+                                installedAppsRepository.updateApp(app.copy(
+                                    installedVersionName = systemInfo.versionName,
+                                    installedVersionCode = systemInfo.versionCode,
+                                    latestVersionName = systemInfo.versionName,
+                                    latestVersionCode = systemInfo.versionCode
+                                ))
+                                Logger.d { "Migrated ${app.packageName}: set versionName/code from system" }
+                            } else {
+                                installedAppsRepository.updateApp(app.copy(
+                                    installedVersionName = app.installedVersion,
+                                    installedVersionCode = 0L,
+                                    latestVersionName = app.installedVersion,
+                                    latestVersionCode = 0L
+                                ))
+                                Logger.d { "Migrated ${app.packageName}: fallback to tag" }
+                            }
+                        } else {
+                            installedAppsRepository.updateApp(app.copy(
+                                installedVersionName = app.installedVersion,
+                                installedVersionCode = 0L,
+                                latestVersionName = app.installedVersion,
+                                latestVersionCode = 0L
+                            ))
+                            Logger.d { "Migrated ${app.packageName} (desktop): fallback to tag" }
+                        }
+                    }
+                }
+
+                Logger.d { "System existence sync and data migration completed" }
+            } catch (e: Exception) {
+                Logger.e { "Failed to sync existence or migrate data: ${e.message}" }
             }
         }
     }
@@ -446,6 +363,8 @@ class DetailsViewModel(
             DetailsAction.CheckForUpdates -> {
                 viewModelScope.launch {
                     try {
+                        syncInstalledAppsUseCase()
+
                         val installedApp = _state.value.installedApp ?: return@launch
                         val hasUpdate =
                             installedAppsRepository.checkForUpdates(installedApp.packageName)

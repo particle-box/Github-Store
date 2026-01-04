@@ -11,17 +11,20 @@ import githubstore.composeapp.generated.resources.failed_to_update
 import githubstore.composeapp.generated.resources.no_updates_available
 import githubstore.composeapp.generated.resources.update_all_failed
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import zed.rainxch.githubstore.core.data.services.PackageMonitor
 import zed.rainxch.githubstore.core.data.local.db.entities.InstalledApp
@@ -32,6 +35,9 @@ import zed.rainxch.githubstore.feature.apps.presentation.model.UpdateAllProgress
 import zed.rainxch.githubstore.feature.apps.presentation.model.UpdateState
 import zed.rainxch.githubstore.core.data.services.Downloader
 import zed.rainxch.githubstore.core.data.services.Installer
+import zed.rainxch.githubstore.core.domain.Platform
+import zed.rainxch.githubstore.core.domain.model.PlatformType
+import zed.rainxch.githubstore.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.githubstore.feature.details.domain.repository.DetailsRepository
 import java.io.File
 
@@ -41,7 +47,9 @@ class AppsViewModel(
     private val downloader: Downloader,
     private val installedAppsRepository: InstalledAppsRepository,
     private val packageMonitor: PackageMonitor,
-    private val detailsRepository: DetailsRepository
+    private val detailsRepository: DetailsRepository,
+    private val platform: Platform,
+    private val syncInstalledAppsUseCase: SyncInstalledAppsUseCase
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -70,6 +78,12 @@ class AppsViewModel(
             _state.update { it.copy(isLoading = true) }
 
             try {
+                // Sync system state using shared use case
+                val syncResult = syncInstalledAppsUseCase()
+                if (syncResult.isFailure) {
+                    Logger.w { "Sync had issues but continuing: ${syncResult.exceptionOrNull()?.message}" }
+                }
+
                 appsRepository.getApps().collect { apps ->
                     val appItems = apps.map { app ->
                         val existing = _state.value.apps.find {
@@ -96,10 +110,70 @@ class AppsViewModel(
             } catch (e: Exception) {
                 Logger.e { "Failed to load apps: ${e.message}" }
                 _state.update {
-                    it.copy(
-                        isLoading = false,
-                    )
+                    it.copy(isLoading = false)
                 }
+            }
+        }
+    }
+
+
+    private suspend fun syncSystemExistenceAndMigrate() {
+        withContext(Dispatchers.IO) {
+            try {
+                val installedPackageNames = packageMonitor.getAllInstalledPackageNames()
+                val appsInDb = installedAppsRepository.getAllInstalledApps().first()
+
+                appsInDb.forEach { app ->
+                    if (!installedPackageNames.contains(app.packageName)) {
+                        Logger.d { "App ${app.packageName} no longer installed (not in system packages), removing from DB" }
+                        installedAppsRepository.deleteInstalledApp(app.packageName)
+                    } else if (app.installedVersionName == null) {
+                        if (platform.type == PlatformType.ANDROID) {
+                            val systemInfo = packageMonitor.getInstalledPackageInfo(app.packageName)
+                            if (systemInfo != null) {
+                                installedAppsRepository.updateApp(app.copy(
+                                    installedVersionName = systemInfo.versionName,
+                                    installedVersionCode = systemInfo.versionCode,
+                                    latestVersionName = systemInfo.versionName,
+                                    latestVersionCode = systemInfo.versionCode
+                                ))
+                                Logger.d { "Migrated ${app.packageName}: set versionName/code from system" }
+                            } else {
+                                installedAppsRepository.updateApp(app.copy(
+                                    installedVersionName = app.installedVersion,
+                                    installedVersionCode = 0L,
+                                    latestVersionName = app.installedVersion,
+                                    latestVersionCode = 0L
+                                ))
+                                Logger.d { "Migrated ${app.packageName}: fallback to tag as versionName" }
+                            }
+                        } else {
+                            installedAppsRepository.updateApp(app.copy(
+                                installedVersionName = app.installedVersion,
+                                installedVersionCode = 0L,
+                                latestVersionName = app.installedVersion,
+                                latestVersionCode = 0L
+                            ))
+                            Logger.d { "Migrated ${app.packageName} (desktop): fallback to tag as versionName" }
+                        }
+                    }
+                }
+
+                Logger.d { "Robust system existence sync and data migration completed" }
+            } catch (e: Exception) {
+                Logger.e { "Failed to sync existence or migrate data: ${e.message}" }
+            }
+        }
+    }
+
+    private fun checkAllForUpdates() {
+        viewModelScope.launch {
+            try {
+                syncInstalledAppsUseCase()
+
+                installedAppsRepository.checkAllForUpdates()
+            } catch (e: Exception) {
+                Logger.e { "Check all for updates failed: ${e.message}" }
             }
         }
     }
@@ -392,22 +466,6 @@ class AppsViewModel(
                 isUpdatingAll = false,
                 updateAllProgress = null
             )
-        }
-    }
-
-    private fun checkAllForUpdates() {
-        viewModelScope.launch {
-            try {
-                _state.value.apps.forEach { appItem ->
-                    try {
-                        installedAppsRepository.checkForUpdates(appItem.installedApp.packageName)
-                    } catch (e: Exception) {
-                        Logger.w { "Failed to check updates for ${appItem.installedApp.packageName}" }
-                    }
-                }
-            } catch (e: Exception) {
-                Logger.e { "Check all for updates failed: ${e.message}" }
-            }
         }
     }
 
