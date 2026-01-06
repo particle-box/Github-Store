@@ -31,14 +31,14 @@ object BottomNavigationUtils {
                 screen = GithubStoreGraph.SearchScreen
             ),
             BottomNavigationItem(
-                titleRes = Res.string.installed_apps,
-                iconRes = Icons.Outlined.Apps,
-                screen = GithubStoreGraph.AppsScreen
-            ),
-            BottomNavigationItem(
                 titleRes = Res.string.favourites,
                 iconRes = Icons.Outlined.Favorite,
                 screen = GithubStoreGraph.FavouritesScreen
+            ),
+            BottomNavigationItem(
+                titleRes = Res.string.installed_apps,
+                iconRes = Icons.Outlined.Apps,
+                screen = GithubStoreGraph.AppsScreen
             ),
             BottomNavigationItem(
                 titleRes = Res.string.settings_title,

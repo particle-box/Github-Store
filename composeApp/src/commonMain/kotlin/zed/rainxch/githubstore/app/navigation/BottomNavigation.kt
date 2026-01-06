@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import io.github.fletchmckee.liquid.liquefiable
 import io.github.fletchmckee.liquid.liquid
@@ -48,7 +49,7 @@ fun BottomNavigation(
                         }
                     } else Modifier
                 )
-                .padding(10.dp),
+                .pointerInput(Unit) { },
         ) {
             BottomNavigationUtils
                 .items()
@@ -69,13 +70,15 @@ fun BottomNavigation(
                                 MaterialTheme.colorScheme.onPrimaryContainer
                             } else MaterialTheme.colorScheme.onSurface,
                         ),
-                        shapes = IconButtonDefaults.shapes()
+                        shapes = IconButtonDefaults.shapes(),
+                        modifier = Modifier
+                            .background(Color.Transparent)
+                            .padding(8.dp)
                     ) {
                         Icon(
                             imageVector = item.iconRes,
                             contentDescription = stringResource(item.titleRes),
-                            modifier = Modifier
-                                .padding(6.dp)
+                            modifier = Modifier.padding(4.dp)
                         )
                     }
                 }
