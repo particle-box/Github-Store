@@ -153,7 +153,7 @@ jobs:
           wget -O /etc/apt/keyrings/adoptium.asc https://packages.adoptium.net/artifactory/api/gpg/key/public
           echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
           apt-get update
-          apt-get install -y temurin-21-jdk
+          apt-get install -y temurin-21-jdk fakeroot rpm
 
       - name: Checkout code
         uses: actions/checkout@v4
