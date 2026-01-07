@@ -7,6 +7,9 @@ import githubstore.composeapp.generated.resources.Res
 import githubstore.composeapp.generated.resources.added_to_favourites
 import githubstore.composeapp.generated.resources.installer_saved_downloads
 import githubstore.composeapp.generated.resources.removed_from_favourites
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -513,10 +516,9 @@ class DetailsViewModel(
                     assetName = assetName,
                     size = sizeBytes,
                     tag = releaseTag,
-                    result = if (isUpdate) {
-                        LogResult.UpdateStarted
-                    } else LogResult.DownloadStarted
+                    result = if (isUpdate) LogResult.UpdateStarted else LogResult.DownloadStarted
                 )
+
                 _state.value = _state.value.copy(
                     downloadError = null,
                     installError = null,
@@ -527,23 +529,38 @@ class DetailsViewModel(
                     extOrMime = assetName.substringAfterLast('.', "").lowercase()
                 )
 
-                _state.value = _state.value.copy(downloadStage = DownloadStage.DOWNLOADING)
-                downloader.download(downloadUrl, assetName).collect { p ->
-                    _state.value = _state.value.copy(downloadProgressPercent = p.percent)
-                    if (p.percent == 100) {
-                        _state.value = _state.value.copy(downloadStage = DownloadStage.VERIFYING)
+                val existingFilePath = downloader.getDownloadedFilePath(assetName)
+
+                val filePath = if (existingFilePath != null) {
+                    Logger.d { "File already exists, skipping download: $existingFilePath" }
+                    appendLog(
+                        assetName = assetName,
+                        size = sizeBytes,
+                        tag = releaseTag,
+                        result = LogResult.Downloaded
+                    )
+                    existingFilePath
+                } else {
+                    _state.value = _state.value.copy(downloadStage = DownloadStage.DOWNLOADING)
+                    downloader.download(downloadUrl, assetName).collect { p ->
+                        _state.value = _state.value.copy(downloadProgressPercent = p.percent)
+                        if (p.percent == 100) {
+                            _state.value = _state.value.copy(downloadStage = DownloadStage.VERIFYING)
+                        }
                     }
+
+                    val downloadedPath = downloader.getDownloadedFilePath(assetName)
+                        ?: throw IllegalStateException("Downloaded file not found")
+
+                    appendLog(
+                        assetName = assetName,
+                        size = sizeBytes,
+                        tag = releaseTag,
+                        result = LogResult.Downloaded
+                    )
+
+                    downloadedPath
                 }
-
-                val filePath = downloader.getDownloadedFilePath(assetName)
-                    ?: throw IllegalStateException("Downloaded file not found")
-
-                appendLog(
-                    assetName = assetName,
-                    size = sizeBytes,
-                    tag = releaseTag,
-                    result = LogResult.Downloaded
-                )
 
                 _state.value = _state.value.copy(downloadStage = DownloadStage.INSTALLING)
                 val ext = assetName.substringAfterLast('.', "").lowercase()
@@ -575,9 +592,7 @@ class DetailsViewModel(
                     assetName = assetName,
                     size = sizeBytes,
                     tag = releaseTag,
-                    result = if (isUpdate) {
-                        LogResult.Updated
-                    } else LogResult.Installed
+                    result = if (isUpdate) LogResult.Updated else LogResult.Installed
                 )
 
             } catch (t: Throwable) {
@@ -785,11 +800,36 @@ class DetailsViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        currentDownloadJob?.cancel()
 
-        currentAssetName?.let { assetName ->
-            viewModelScope.launch {
-                downloader.cancelDownload(assetName)
+        CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                currentDownloadJob?.cancel()
+                currentDownloadJob = null
+            }
+
+            launch {
+                try {
+                    val allFiles = downloader.listDownloadedFiles()
+
+                    Logger.d { "Starting cleanup of ${allFiles.size} files" }
+
+                    allFiles.forEach { file ->
+                        try {
+                            val deleted = downloader.cancelDownload(file.fileName)
+                            if (deleted) {
+                                Logger.d { "✓ Cleaned up file on screen exit: ${file.fileName}" }
+                            } else {
+                                Logger.w { "✗ Failed to delete file: ${file.fileName}" }
+                            }
+                        } catch (e: Exception) {
+                            Logger.e { "✗ Error deleting ${file.fileName}: ${e.message}" }
+                        }
+                    }
+
+                    Logger.d { "Cleanup complete - all files processed" }
+                } catch (t: Throwable) {
+                    Logger.e { "Failed to cleanup downloads: ${t.message}" }
+                }
             }
         }
     }

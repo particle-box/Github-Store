@@ -51,7 +51,7 @@ data class DetailsState(
     val isAppManagerEnabled: Boolean = false,
 
     val installedApp: InstalledApp? = null,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 )
 
 enum class DownloadStage {
