@@ -42,9 +42,14 @@
 </br>
 </br>
 
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/15655" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15655" alt="rainxchzed%2FGithub-Store | Trendshift" style="width: 250px; height: 54px;" width="250" height="55" />
+
 <a href="https://hellogithub.com/en/repository/rainxchzed/Github-Store" target="_blank">
   <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=rainxchzed%2FGithub-Store&claim_uid=&theme=dark" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
 </a>
+</p>
 
 </p>
 
