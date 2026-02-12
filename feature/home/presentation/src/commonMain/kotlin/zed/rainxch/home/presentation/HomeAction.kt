@@ -1,7 +1,7 @@
 package zed.rainxch.home.presentation
 
 import zed.rainxch.core.domain.model.GithubRepoSummary
-import zed.rainxch.home.presentation.model.HomeCategory
+import zed.rainxch.home.domain.model.HomeCategory
 
 sealed interface HomeAction {
     data object Refresh : HomeAction

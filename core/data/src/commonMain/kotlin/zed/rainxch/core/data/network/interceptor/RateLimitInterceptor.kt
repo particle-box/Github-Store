@@ -2,7 +2,9 @@ package zed.rainxch.core.data.network.interceptor
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpClientPlugin
+import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.HttpResponsePipeline
 import io.ktor.http.Headers
 import io.ktor.util.AttributeKey
 import zed.rainxch.core.domain.model.RateLimitException
@@ -31,7 +33,7 @@ class RateLimitInterceptor(
         }
 
         override fun install(plugin: RateLimitInterceptor, scope: HttpClient) {
-            scope.receivePipeline.intercept(io.ktor.client.statement.HttpResponsePipeline.Receive) {
+            scope.receivePipeline.intercept(HttpReceivePipeline.State) {
                 val response = subject
 
                 parseRateLimitFromHeaders(response.headers)?.let { rateLimitInfo ->

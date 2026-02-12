@@ -2,7 +2,7 @@ package zed.rainxch.home.presentation
 
 import zed.rainxch.core.domain.model.InstalledApp
 import zed.rainxch.core.presentation.model.DiscoveryRepository
-import zed.rainxch.home.presentation.model.HomeCategory
+import zed.rainxch.home.domain.model.HomeCategory
 
 data class HomeState(
     val repos: List<DiscoveryRepository> = emptyList(),

@@ -12,6 +12,7 @@ import zed.rainxch.core.data.local.db.dao.FavoriteRepoDao
 import zed.rainxch.core.data.local.db.dao.InstalledAppDao
 import zed.rainxch.core.data.local.db.dao.StarredRepoDao
 import zed.rainxch.core.data.local.db.dao.UpdateHistoryDao
+import zed.rainxch.core.data.logging.KermitLogger
 import zed.rainxch.core.data.network.createGitHubHttpClient
 import zed.rainxch.core.data.repository.AuthenticationStateImpl
 import zed.rainxch.core.data.repository.FavouritesRepositoryImpl
@@ -20,6 +21,7 @@ import zed.rainxch.core.data.repository.RateLimitRepositoryImpl
 import zed.rainxch.core.data.repository.StarredRepositoryImpl
 import zed.rainxch.core.data.repository.ThemesRepositoryImpl
 import zed.rainxch.core.domain.getPlatform
+import zed.rainxch.core.domain.logging.GitHubStoreLogger
 import zed.rainxch.core.domain.model.Platform
 import zed.rainxch.core.domain.repository.AuthenticationState
 import zed.rainxch.core.domain.repository.FavouritesRepository
@@ -32,6 +34,10 @@ import zed.rainxch.core.domain.use_cases.SyncInstalledAppsUseCase
 val coreModule = module {
     single {
         CoroutineScope(Dispatchers.IO + SupervisorJob())
+    }
+
+    single<GitHubStoreLogger> {
+        KermitLogger
     }
 
     single<Platform> {

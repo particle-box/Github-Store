@@ -23,7 +23,7 @@ import zed.rainxch.core.domain.repository.StarredRepository
 import zed.rainxch.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.core.presentation.model.DiscoveryRepository
 import zed.rainxch.home.domain.repository.HomeRepository
-import zed.rainxch.home.presentation.model.HomeCategory
+import zed.rainxch.home.domain.model.HomeCategory
 
 class HomeViewModel(
     private val homeRepository: HomeRepository,
@@ -130,8 +130,8 @@ class HomeViewModel(
             try {
                 val flow = when (targetCategory) {
                     HomeCategory.TRENDING -> homeRepository.getTrendingRepositories(nextPageIndex)
-                    HomeCategory.NEW -> homeRepository.getNew(nextPageIndex)
-                    HomeCategory.RECENTLY_UPDATED -> homeRepository.getRecentlyUpdated(nextPageIndex)
+                    HomeCategory.HOT_RELEASE -> homeRepository.getHotReleaseRepositories(nextPageIndex)
+                    HomeCategory.MOST_POPULAR -> homeRepository.getMostPopular(nextPageIndex)
                 }
 
                 flow.collect { paginatedRepos ->

@@ -64,7 +64,7 @@ import zed.rainxch.core.presentation.components.RepositoryCard
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationLiquid
 import zed.rainxch.core.presentation.theme.GithubStoreTheme
 import zed.rainxch.home.presentation.components.HomeFilterChips
-import zed.rainxch.home.presentation.model.HomeCategory
+import zed.rainxch.home.domain.model.HomeCategory
 
 @Composable
 fun HomeRoot(

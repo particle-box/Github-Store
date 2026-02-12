@@ -5,6 +5,6 @@ import zed.rainxch.core.domain.model.PaginatedDiscoveryRepositories
 
 interface HomeRepository {
     fun getTrendingRepositories(page: Int): Flow<PaginatedDiscoveryRepositories>
-    fun getNew(page: Int): Flow<PaginatedDiscoveryRepositories>
-    fun getRecentlyUpdated(page: Int): Flow<PaginatedDiscoveryRepositories>
+    fun getHotReleaseRepositories(page: Int): Flow<PaginatedDiscoveryRepositories>
+    fun getMostPopular(page: Int): Flow<PaginatedDiscoveryRepositories>
 }
