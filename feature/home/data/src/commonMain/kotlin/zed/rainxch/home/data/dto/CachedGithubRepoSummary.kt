@@ -17,10 +17,5 @@ data class CachedGithubRepoSummary(
     val topics: List<String>?,
     val releasesUrl: String,
     val updatedAt: String,
-    val createdAt: String? = null,
     val latestReleaseDate: String? = null,
-    val releaseRecency: Int? = null,
-    val releaseRecencyText: String? = null,
-    val trendingScore: Double? = null,
-    val popularityScore: Int? = null
 )
