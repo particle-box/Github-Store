@@ -102,13 +102,15 @@ compose.desktop {
             packageVersion = libs.versions.projectVersionName.get().toString()
             vendor = "rainxchzed"
             includeAllModules = true
+
+            val currentOs = org.gradle.internal.os.OperatingSystem.current()
             targetFormats(
-                TargetFormat.Dmg,
-                TargetFormat.Pkg,
-                TargetFormat.Exe,
-                TargetFormat.Msi,
-                TargetFormat.Deb,
-                TargetFormat.Rpm,
+                *when {
+                    currentOs.isWindows -> arrayOf(TargetFormat.Exe, TargetFormat.Msi)
+                    currentOs.isMacOsX -> arrayOf(TargetFormat.Dmg, TargetFormat.Pkg)
+                    currentOs.isLinux  -> arrayOf(TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
+                    else -> emptyArray()
+                }
             )
             windows {
                 iconFile.set(project.file("logo/app_icon.ico"))

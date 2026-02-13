@@ -16,7 +16,6 @@ env:
     -Dorg.gradle.daemon=false
     -Dorg.gradle.parallel=true
     -Dorg.gradle.caching=true
-    -Dorg.gradle.configuration-cache=true
 
 jobs:
   build-windows:
@@ -84,9 +83,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-13
+          - os: macos-15-intel
             arch: x64
-          - os: macos-14
+          - os: macos-latest
             arch: arm64
 
     runs-on: ${{ matrix.os }}
@@ -152,12 +151,9 @@ jobs:
     strategy:
       matrix:
         include:
-          # Ubuntu 24.04 (latest) — produces .deb with t64 deps (libasound2t64, libpng16-16t64)
-          # Compatible with: Ubuntu 24.04+, Debian 13+ (Trixie)
           - os: ubuntu-latest
             label: modern
-          # Ubuntu 22.04 — produces .deb with classic deps (libasound2, libpng16-16)
-          # Compatible with: Debian 12 (Bookworm), Ubuntu 22.04, and older systems
+
           - os: ubuntu-22.04
             label: debian12-compat
 
