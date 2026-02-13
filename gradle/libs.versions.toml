@@ -56,11 +56,11 @@ landscapist = "2.9.1"
 jsystemthemedetector = "3.9.1"
 
 projectApplicationId = "zed.rainxch.githubstore"
-projectVersionName = "1.5.1"
+projectVersionName = "1.6.0"
 projectMinSdkVersion = "26"
 projectTargetSdkVersion = "36"
 projectCompileSdkVersion = "36"
-projectVersionCode = "10"
+projectVersionCode = "11"
 
 # Desktop Version
 desktopPackageName = "GitHub-Store"
