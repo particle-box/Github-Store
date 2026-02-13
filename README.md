@@ -26,7 +26,7 @@
 <img src="https://img.shields.io/github/stars/rainxchzed/Github-Store?color=ffff00&style=for-the-badge&labelColor=a1a116&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnN0YXI8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxNy4yN0wxOC4xOCwyMUwxNi41NCwxMy45N0wyMiw5LjI0TDE0LjgxLDguNjJMMTIsMkw5LjE5LDguNjJMMiw5LjI0TDcuNDUsMTMuOTdMNS44MiwyMUwxMiwxNy4yN1oiIGZpbGw9IndoaXRlIiAvPjwvc3ZnPg=="/>
 </a>
 
-<img src="https://img.shields.io/badge/45K+-Users-8ce2ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPmFjY291bnQtZ3JvdXA8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxMi43NUM3LDEyLjc1IDMsMTMuMzUgMywxNi4yNVYxOEgyMVYxNi4yNUMyMSwxMy4zNSAxNywxMi43NSAxMiwxMi43NU0xNyw3QTE3LDE3IDAgMCwxIDE3LDdNMjEsMTYuMjVWMThIMjRWMTYuMjVDMjQsMTQuNDMgMjEuNSwxMy44NyAxOSwxMy41QzIwLjEyLDE0LjEgMjEsMTUgMjEsMTYuMjVNMiw3QTIsMiAwIDAsMSA0LDVIMjBBMiwyIDAgMCwxIDIyLDdBMiwyIDAgMCwxIDIwLDlINEEyLDIgMCAwLDEgMiw3TTEyLDEwQTMsMyAwIDAsMSA5LDdBMywzIDAgMCwxIDEyLDRBMywzIDAgMCwxIDE1LDdBMywzIDAgMCwxIDEyLDEwWiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+&labelColor=0782ab"/>
+<img src="https://img.shields.io/badge/55K+-Users-8ce2ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPmFjY291bnQtZ3JvdXA8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxMi43NUM3LDEyLjc1IDMsMTMuMzUgMywxNi4yNVYxOEgyMVYxNi4yNUMyMSwxMy4zNSAxNywxMi43NSAxMiwxMi43NU0xNyw3QTE3LDE3IDAgMCwxIDE3LDdNMjEsMTYuMjVWMThIMjRWMTYuMjVDMjQsMTQuNDMgMjEuNSwxMy44NyAxOSwxMy41QzIwLjEyLDE0LjEgMjEsMTUgMjEsMTYuMjVNMiw3QTIsMiAwIDAsMSA0LDVIMjBBMiwyIDAgMCwxIDIyLDdBMiwyIDAgMCwxIDIwLDlINEEyLDIgMCAwLDEgMiw3TTEyLDEwQTMsMyAwIDAsMSA5LDdBMywzIDAgMCwxIDEyLDRBMywzIDAgMCwxIDE1LDdBMywzIDAgMCwxIDEyLDEwWiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+&labelColor=0782ab"/>
 
 </br>
 </br>
@@ -42,9 +42,14 @@
 </br>
 </br>
 
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/15655" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15655" alt="rainxchzed%2FGithub-Store | Trendshift" style="width: 250px; height: 54px;" width="250" height="55" />
+
 <a href="https://hellogithub.com/en/repository/rainxchzed/Github-Store" target="_blank">
   <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=rainxchzed%2FGithub-Store&claim_uid=&theme=dark" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
 </a>
+</p>
 
 </p>
 
@@ -73,7 +78,9 @@ Built with Kotlin Multiplatform and Compose Multiplatform for Android and Deskto
 
 Check out GitHub Store [Wiki](https://github.com/rainxchzed/Github-Store/wiki) for FAQ and useful information
 
-**Privacy Policy:** [openhub-store.github.io/privacy-policy](https://openhub-store.github.io/privacy-policy/)
+🌐 **Website:** [github-store.org](https://github-store.org)
+💬 **Discord:** [Join the community](https://discord.gg/x9Cvh2Z9qS)
+📜 **Privacy Policy:** [github-store.org/privacy-policy](https://github-store.org/privacy-policy/)
 
 </div>
 
@@ -103,6 +110,15 @@ GitHub® is a registered trademark of GitHub, Inc.
 </a>
 <a href="https://f-droid.org/en/packages/zed.rainxch.githubstore/">
    <img src="https://f-droid.org/badge/get-it-on.png" height="80"/>
+</a>
+<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/rainxchzed/Github-Store/">
+  <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="60" alt="Get it on Obtainium">
+</a>
+</p>
+
+<p align="center">
+  <a href="https://discord.gg/x9Cvh2Z9qS">
+  <img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join Discord">
 </a>
 </p>
 
@@ -153,16 +169,6 @@ GitHub® is a registered trademark of GitHub, Inc.
 - **Cross‑platform UX**
     - Android: opens APK downloads with the package installer, tracks installations in a local database, and shows them in a dedicated Apps screen with update indicators.
     - Desktop (Windows/macOS/Linux): downloads installers to the user’s Downloads folder and opens them with the default handler; no hidden temp locations.
-
-- **Appearance & theming**
-- Material 3 design with **Material 3 Expressive** components on all platforms.
-- Material You dynamic color support on Android where available.
-- Optional AMOLED black mode for dark theme on OLED devices.
-
-- **Safety & inspection (Android)**
-- Optional GitHub sign‑in via OAuth device flow for higher rate limits with minimal scopes.
-- “Open in AppManager” action to inspect an APK’s permissions and trackers before installing.
-
 
 ---
 
@@ -226,51 +232,6 @@ automatically—no manual submission required.
 
 ---
 
-## ⚙️ Tech stack
-
-- **Minimum Android SDK: 24**
-
-- **Language & Platform**
-    - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) (Android + JVM Desktop)
-    - [Compose Multiplatform UI](https://www.jetbrains.com/compose-multiplatform/) ([Material 3](https://m3.material.io/),
-      icons, resources)
-
-- **Async & state**
-    - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) + [Flow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/)
-    - AndroidX Lifecycle (ViewModel + Runtime Compose)
-
-- **Networking & Data**
-    - [Ktor 3](https://ktor.io/) (HttpClient with OkHttp on Android, Java on Desktop)
-    - [Kotlinx Serialization JSON](https://github.com/Kotlin/kotlinx.serialization).
-    - [Kotlinx Datetime](https://github.com/Kotlin/kotlinx-datetime) for time handling
-    - [Room](https://developer.android.com/jetpack/androidx/releases/room) + KSP for the installed apps database on Android.
-
-- **Dependency injection**
-    - [Koin 4](https://insert-koin.io/)
-
-- **Navigation**
-    - [JetBrains Navigation Compose](https://kotlinlang.org/docs/multiplatform/compose-navigation.html)
-      for shared navigation graph
-
-- **Auth & Security**
-    - GitHub OAuth (Device Code flow)
-    - [Androidx DataStore](https://developer.android.com/kotlin/multiplatform/datastore) for token
-      storage
-
-- **Media & markdown**
-    - [Coil 3](https://coil-kt.github.io/coil/getting_started/) (Ktor3 image loader)
-    - [multiplatform-markdown-renderer-m3](https://github.com/mikepenz/multiplatform-markdown-renderer) (+
-      Coil3 integration) for README/release notes
-
-- **Logging & tooling**
-    - [Kermit logging](https://kermit.touchlab.co/)
-    - [Compose Hot Reload](https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html) (
-      desktop)
-    - [ProGuard/R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) +
-      resource shrinking for release builds
-
----
-
 ## ✅ Pros / Why use GitHub Store?
 
 - **No more hunting through GitHub releases**
@@ -289,6 +250,62 @@ automatically—no manual submission required.
 - **Open source & extensible**  
   Written in KMP with a clear separation between networking, domain logic, and UI—easy to fork,
   extend, or adapt.
+
+---
+
+## 🔐 GitHub Store APK Signing Certificate
+
+All official GitHub Store releases are signed with the following certificate fingerprint:
+
+SHA-256:
+`B7:F2:8E:19:8E:48:C1:93:B0:38:C6:5D:92:DD:F7:BC:07:7B:0D:B5:9E:BC:9B:25:0A:6D:AC:48:C1:18:03:CA`
+
+---
+
+## 🔑 GitHub OAuth Configuration
+
+**TL;DR**
+1. Create a GitHub OAuth App  
+2. Copy **Client ID**  
+3. Put it in `local.properties`
+
+<details>
+<summary><strong>Show full setup guide</strong></summary>
+
+  <br/>
+  
+### 1 - Create a GitHub OAuth App
+Go to:
+**GitHub → Settings → Developer settings → OAuth Apps → New OAuth App**
+
+| Field                          | Value                                       |
+| ------------------------------ | ------------------------------------------- |
+| **Application name**           | Anything you like (e.g. *GitHub Store Dev*) |
+| **Homepage URL** | `https://github.com/username/repo_name`                   |
+| **Authorization callback URL** | `githubstore://callback`                    |
+
+Then click **Create application**.
+
+### 2 - Copy Your Client ID
+After creating the app, GitHub will show:
+- **Client ID** ← you need this
+- **Client Secret** ← ❗ NOT required for this project
+
+### 3 - Add It to Your Project
+Open your project’s `local.properties` file (root of the project) and add:
+```properties
+GITHUB_CLIENT_ID=YOUR_CLIENT_ID_HERE
+```
+
+### 4 - Sync & Run
+Sync the project and run the app. You should now be able to sign in with GitHub.
+
+### ❗ Important Notes
+- `local.properties` is **not committed to Git**, so your Client ID stays local.
+- This project only needs the **Client ID** (not the Client Secret).
+- Each developer should create their own OAuth app for development.
+
+</details>
 
 ---
 
@@ -316,30 +333,9 @@ I built and maintain this entirely on my own while finishing high school. Your s
 - ⭐ **Starring this repo** — helps others discover GitHub Store
 - 🐛 **Reporting bugs** — makes the app better for everyone
 - 📢 **Sharing with friends** — spread the word to other developers
-- 💬 **Joining discussions** — your feedback shapes the roadmap
+- 💬 **Joining our [Discord](https://discord.gg/x9Cvh2Z9qS)** — your feedback shapes the roadmap
 
-Every bit of support—financial or not—means the world and keeps this project alive. Thank you! 🙏
-
----
-
-## Star History
-
-<a href="https://www.star-history.com/#rainxchzed/Github-Store&type=timeline&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
- </picture>
-</a>
-
-## 🔑 Configuration
-
-GitHub Store uses a GitHub OAuth app for authentication and API rate‑limit isolation.
-
-1. Create a GitHub OAuth app at **GitHub → Settings → Developer settings → OAuth Apps**.
-2. Set the callback URL to `githubstore://callback` (_Not quite important_).
-3. Copy the **Client ID** from the OAuth app.
-4. In your project’s `local.properties`, add:
+Every bit of support—financial or not—means the world and keeps this project alive. Thank you!
 
 ---
 
@@ -355,7 +351,18 @@ your own risk.
 This project does not review, validate, or guarantee that any installer is safe, free of malware, or
 fit for any particular purpose.
 
-## Stats
+---
+
+## Star History
+
+<a href="https://www.star-history.com/#rainxchzed/Github-Store&type=timeline&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
+ </picture>
+</a>
+
 ![Alt](https://repobeats.axiom.co/api/embed/20367dca127572e9c47db33850979d78df2c6a8b.svg "Repobeats analytics image")
 
 ## 📄 License
